@@ -1,0 +1,32 @@
+# seeds/seeds.yml
+
+seeds:
+  - name: raw_techloja
+    config:
+      column_types:
+        id_produto: varchar
+        nome_produto: varchar
+        preco_em_reais: varchar
+        ean: varchar           # <-- Correção
+        em_estoque: boolean
+        data_extracao: date
+
+  - name: raw_gadgetplace
+    config:
+      column_types:
+        sku: integer
+        product_name: varchar
+        price: numeric(10, 2)
+        barcode: varchar       # <-- Correção
+        availability: varchar
+        timestamp: timestamp
+
+  - name: raw_sales_events
+    config:
+      # Definição explícita para a nova tabela
+      column_types:
+        order_id: varchar      # É um GUID
+        product_ean: varchar   # <-- Correção (O provável culpado)
+        quantity_sold: integer
+        store_name: varchar
+        sale_timestamp: timestamp
