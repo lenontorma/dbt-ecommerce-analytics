@@ -1,0 +1,35 @@
+
+services:
+  # ---- O Data Warehouse ----
+  postgres:
+    image: postgres:15-alpine
+    container_name: dbt_postgres
+    environment:
+      POSTGRES_USER: dbt_user
+      POSTGRES_PASSWORD: dbt_password
+      POSTGRES_DB: dbt_db
+    ports:
+      - "5433:5432" # Expõe a porta para você conectar seu DBeaver/Datagrip
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbt_user -d dbt_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---- O Ambiente DBT ----
+  dbt:
+    build:
+      context: . # Usa o Dockerfile nesta pasta
+      dockerfile: Dockerfile
+    container_name: dbt_cli
+    volumes:
+      - .:/usr/app # Mapeia seu projeto local para dentro do container
+    command: tail -f /dev/null # Mantém o container rodando
+    depends_on:
+      postgres:
+        condition: service_healthy # Só sobe o DBT quando o Postgres estiver pronto
+
+volumes:
+  postgres_data: # Volume para persistir os dados do Postgres
