@@ -6,7 +6,7 @@
 
 ## 🎯 O Problema: A Dor que Solucionamos
 
-No cenário inicial, um analista de dados recebe três arquivos CSV de fontes diferentes (`TechLoja`, `GadgetPlace`, `Vendas`) e uma tarefa simples: "Qual é a nossa receita total por produto?"
+No cenário inicial, um analista de dados recebe três arquivos CSV de fontes diferentes e uma tarefa simples: "Qual é a nossa receita total por produto?"
 
 O analista não consegue responder a essa pergunta em minutos. Ele passará dias sofrendo, pois:
 
@@ -25,7 +25,7 @@ Este projeto não é apenas um script SQL. É uma **fábrica de dados (pipeline)
 
 ![Diagrama de fluxo do DBT](./.assets/dbt.png)
 
-Nossa solução pega os CSVs brutos e entrega tabelas limpas, testadas e prontas para o consumo (`marts`). Quando o analista acessa o banco de dados, ele não vê a sujeira. Ele vê apenas as tabelas finais:
+A solução pega os CSVs brutos e entrega tabelas limpas, testadas e prontas para o consumo (`marts`). Quando o analista acessa o banco de dados, ele não vê a sujeira. Ele vê apenas as tabelas finais:
 
 * `dim_produtos`: Uma lista mestra de produtos, limpa e com nomes padronizados.
 * `fct_estoque_precos`: Um histórico de preços e estoque.
@@ -35,15 +35,15 @@ O analista agora responde a pergunta em **minutos**, não em dias.
 
 ### Como o DBT resolveu isso?
 
-* **Testes (`dbt test`):** O pipeline **para automaticamente** se dados sujos (como preços negativos ou IDs duplicados) forem detectados na fonte. Garantimos que apenas dados válidos cheguem ao analista.
+* **Testes (`dbt test`):** O pipeline **para automaticamente** se dados sujos (como preços negativos ou IDs duplicados) forem detectados na fonte. Para garantir que apenas dados válidos cheguem ao analista.
     
     ![Resultado dos Testes no Terminal](./.assets/dbt-test.png)
 
-* **Transformação em Camadas (`staging`, `marts`):** Isolamos a lógica. A camada `staging` limpa a sujeira. A camada `marts` constrói os modelos de negócio.
+* **Transformação em Camadas (`staging`, `marts`):** Isolei a lógica. A camada `staging` limpa a sujeira. A camada `marts` constrói os modelos de negócio.
 
-* **Performance (`incremental`):** O histórico de preços (`fct_`) não é reconstruído do zero. Usamos materialização incremental para processar **apenas** os dados novos, tornando o pipeline escalável.
+* **Performance (`incremental`):** O histórico de preços (`fct_`) não é reconstruído do zero. Usei materialização incremental para processar **apenas** os dados novos, tornando o pipeline escalável.
 
-* **Documentação (`dbt docs`):** Geramos um site de documentação vivo que mostra a linhagem dos dados (de onde vêm e para onde vão) e o que cada coluna significa.
+* **Documentação (`dbt docs`):** Gerei um site de documentação vivo que mostra a linhagem dos dados (de onde vêm e para onde vão) e o que cada coluna significa.
     
     ![Gráfico de Linhagem do Projeto (dbt docs)](./.assets/data_lineage.png)
     ![Documentação do Projeto (dbt docs)](./.assets/dbt-doc.png)
