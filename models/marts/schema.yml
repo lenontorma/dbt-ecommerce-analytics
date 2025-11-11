@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: dim_produtos
+    description: "Dimensão mestra de produtos, unificando todas as fontes. 1 linha por EAN."
+    columns:
+      - name: sk_produto
+        description: "Chave surrogate (hash do EAN) para joins."
+        tests:
+          - unique
+          - not_null
+      - name: ean_produto
+        description: "O EAN (código de barras) como chave de negócio."
+        tests:
+          - unique
+          - not_null
+
+  - name: kpi_vendas_por_produto
+    description: "KPI de receita e volume, agregado por produto."
+    columns:
+      - name: sk_produto
+        description: "Chave da dim_produtos."
+        tests:
+          # Este teste verifica se TODOS os sk_produto do KPI
+          # existem na tabela dim_produtos. Garante a integridade.
+          - relationships:
+              to: ref('dim_produtos')
+              field: sk_produto
+      - name: receita_total_bruta
+        description: "Soma da receita. Deve ser sempre positiva."
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
