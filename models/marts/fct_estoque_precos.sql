@@ -1,34 +1,37 @@
 {{
   config(
-    materialized='table'
+    materialized='incremental',
+    unique_key=['ean_produto', 'data_extracao', 'fonte_dados']
   )
 }}
 
 with
 stg_techloja as (
-    select
-        ean_produto,
-        data_extracao,
-        preco_em_reais,
-        esta_em_estoque,
-        fonte_dados
-    from {{ ref('stg_techloja') }}
+    select * from {{ ref('stg_techloja') }}
 ),
 
 stg_gadgetplace as (
+    select * from {{ ref('stg_gadgetplace') }}
+),
+
+uniao_fatos as (
     select
         ean_produto,
         data_extracao,
         preco_em_reais,
         esta_em_estoque,
         fonte_dados
-    from {{ ref('stg_gadgetplace') }}
-),
+    from stg_techloja
 
-uniao_fatos as (
-    select * from stg_techloja
     union all
-    select * from stg_gadgetplace
+
+    select
+        ean_produto,
+        data_extracao,
+        preco_em_reais,
+        esta_em_estoque,
+        fonte_dados
+    from stg_gadgetplace
 )
 
 select
@@ -40,3 +43,9 @@ select
     fonte_dados
 from uniao_fatos
 where ean_produto is not null
+
+
+{% if is_incremental() %}
+  and data_extracao > (select max(data_extracao) from {{ this }})
+
+{% endif %}
