@@ -1,0 +1,27 @@
+
+version: 2
+
+models:
+  - name: stg_techloja
+    columns:
+      - name: id_produto_techloja
+        description: "O ID único da fonte TechLoja."
+        tests:
+          - unique
+          - not_null
+      - name: preco_em_reais
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+  - name: stg_gadgetplace
+    columns:
+      - name: id_produto_gadgetplace
+        description: "O SKU (ID) único da fonte GadgetPlace."
+        tests:
+          - unique
+          - not_null
+      - name: preco_em_reais
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
